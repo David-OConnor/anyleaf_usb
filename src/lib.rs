@@ -7,6 +7,7 @@
 
 
 pub const MSG_START: u8 = 69;
+pub const PAYLOAD_START_I: usize = 3;
 
 pub const CRC_POLY: u8 = 0xab;
 pub const CRC_LUT: [u8; 256] = crc_init(CRC_POLY);
@@ -69,3 +70,9 @@ pub fn calc_crc(lut: &[u8; 256], data: &[u8], mut size: u8) -> u8 {
     crc
 }
 
+
+/// Convert bytes to a float
+pub fn bytes_to_float(bytes: &[u8]) -> f32 {
+    let bytes: [u8; 4] = bytes.try_into().unwrap();
+    f32::from_bits(u32::from_be_bytes(bytes))
+}
