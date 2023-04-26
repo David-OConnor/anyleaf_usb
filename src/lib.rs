@@ -22,7 +22,7 @@ pub const DEVICE_CODE_RECEIVER: u8 = 3;
 
 pub const CONFIG_SIZE_COMMON: usize = 4;
 
-pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 3;
+pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 7;
 pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 1;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
@@ -75,4 +75,14 @@ pub fn calc_crc(lut: &[u8; 256], data: &[u8], mut size: u8) -> u8 {
 pub fn bytes_to_float(bytes: &[u8]) -> f32 {
     let bytes: [u8; 4] = bytes.try_into().unwrap();
     f32::from_bits(u32::from_be_bytes(bytes))
+}
+
+/// Returns true if the CRC passed; false if failed.
+pub fn check_crc(buf: &[u8], payload_size: usize) -> bool {
+    let crc_i = payload_size + PAYLOAD_START_I;
+    
+    let crc_received = buf[crc_i];
+    let expected_crc_rx = calc_crc(&CRC_LUT, &buf[..crc_i], crc_i as u8);
+
+    crc_received == expected_crc_rx 
 }
