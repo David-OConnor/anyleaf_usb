@@ -5,6 +5,7 @@
 
 // use serialport::{self, SerialPort, SerialPortType};
 
+use num_enum::TryFromPrimitive; // Enum from integer
 
 pub const MSG_START: u8 = 69;
 
@@ -32,11 +33,51 @@ pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 1;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
+pub const PAYLOAD_SIZE_CONFIG_GNSS: usize = CONFIG_SIZE_GNSS + PAYLOAD_START_I + CRC_LEN;
+pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I + CRC_LEN;
 
 pub trait MessageType {
     fn val(&self) -> u8;
     fn payload_size(&self) -> usize;
 }
+
+#[derive(Copy, Clone, Eq, PartialEq, TryFromPrimitive)]
+#[repr(u8)]
+pub enum MsgType {
+    ReqConfig = 0,
+    ConfigGnss = 1,
+    ConfigRx = 2,
+    SaveConfigGnss = 3,
+    SaveConfigRx = 4,
+}
+
+impl MessageType for MsgType {
+    fn val(&self) -> u8 {
+        *self as u8
+    }
+
+    fn payload_size(&self) -> usize {
+        match self {
+            Self::ReqConfig => 0,
+            Self::ConfigGnss => CONFIG_SIZE_GNSS,
+            Self::ConfigRx => CONFIG_SIZE_RECEIVER,
+            Self::SaveConfigGnss => CONFIG_SIZE_GNSS,
+            Self::SaveConfigRx => CONFIG_SIZE_RECEIVER,
+        }
+    }
+}
+
+// impl MsgType {
+//     pub fn payload_size(&self) -> usize {
+//         match self {
+//             Self::ReqConfig => 0,
+//             Self::ConfigGnss => CONFIG_SIZE_GNSS,
+//             Self::ConfigRx => CONFIG_SIZE_RECEIVER,
+//             Self::SaveConfigGnss => CONFIG_SIZE_GNSS,
+//             Self::SaveConfigRx => CONFIG_SIZE_RECEIVER,
+//         }
+//     }
+// }
 
 /// https://github.com/chris1seto/OzarkRiver/blob/4channel/FlightComputerFirmware/Src/Crsf.c
 const fn crc_init(poly: u8) -> [u8; 256] {
@@ -60,7 +101,7 @@ const fn crc_init(poly: u8) -> [u8; 256] {
     lut
 }
 
-/// CRC8 using a specific poly, includes all bytes buffer[1] to end of payload, except for
+/// CRC8 using a specific poly, includes all bytes, except for
 /// the CRC byte itself.
 /// https://github.com/chris1seto/OzarkRiver/blob/4channel/FlightComputerFirmware/Src/Crsf.c
 pub fn calc_crc(lut: &[u8; 256], data: &[u8], mut size: u8) -> u8 {
@@ -75,7 +116,6 @@ pub fn calc_crc(lut: &[u8; 256], data: &[u8], mut size: u8) -> u8 {
     crc
 }
 
-
 /// Convert bytes to a float
 pub fn bytes_to_float(bytes: &[u8]) -> f32 {
     let bytes: [u8; 4] = bytes.try_into().unwrap();
@@ -85,9 +125,9 @@ pub fn bytes_to_float(bytes: &[u8]) -> f32 {
 /// Returns true if the CRC passed; false if failed.
 pub fn check_crc(buf: &[u8], payload_size: usize) -> bool {
     let crc_i = payload_size + PAYLOAD_START_I;
-    
+
     let crc_received = buf[crc_i];
     let expected_crc_rx = calc_crc(&CRC_LUT, &buf[..crc_i], crc_i as u8);
 
-    crc_received == expected_crc_rx 
+    crc_received == expected_crc_rx
 }
