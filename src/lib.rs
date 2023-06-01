@@ -7,12 +7,17 @@
 
 
 pub const MSG_START: u8 = 69;
+
+// Includes start byte, message type, and device-specific code.
 pub const PAYLOAD_START_I: usize = 3;
+
+pub const CRC_LEN: usize = 1;
 
 pub const CRC_POLY: u8 = 0xab;
 pub const CRC_LUT: [u8; 256] = crc_init(CRC_POLY);
 
-pub const READINGS_SIZE: usize = 4 * 4 + 1;
+// todo: No.
+pub const SENSOR_IFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
 // todo: enum etc for these?
 
