@@ -22,14 +22,15 @@ pub const SENSOR_IFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
 // todo: enum etc for these?
 
+pub const DEVICE_CODE_PC: u8 = 0;
 pub const DEVICE_CODE_SENSOR_INTERFACE: u8 = 1;
 pub const DEVICE_CODE_GNSS: u8 = 2;
 pub const DEVICE_CODE_RECEIVER: u8 = 3;
 
 pub const CONFIG_SIZE_COMMON: usize = 4;
 
-pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 7;
-pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 1;
+pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 8;
+pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 2;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
