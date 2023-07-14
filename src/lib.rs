@@ -30,13 +30,19 @@ pub const DEVICE_CODE_CORVUS: u8 = 4;
 
 pub const CONFIG_SIZE_COMMON: usize = 4;
 
+// Only includes things relevant to the UI.
 pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 8;
 pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 2;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
+pub const SYSTEM_STATUS_GNSS_SIZE: usize = 4;
+
 pub const PAYLOAD_SIZE_CONFIG_GNSS: usize = CONFIG_SIZE_GNSS + PAYLOAD_START_I + CRC_LEN;
 pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I + CRC_LEN;
+
+pub const CONTROLS_SIZE_RAW: usize = 25;
+pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
 
 pub trait MessageType {
     fn val(&self) -> u8;
@@ -51,6 +57,14 @@ pub enum MsgType {
     ConfigRx = 2,
     SaveConfigGnss = 3,
     SaveConfigRx = 4,
+    ControlsRaw = 5,
+    ReqControlsRaw = 6,
+    LinkStats = 7,
+    ReqLinkStats = 8,
+    CalibrateAccel = 9,
+    ReqSystemStatus = 10,
+    SystemStatusGnss = 11,
+    Ack = 12,
 }
 
 impl MessageType for MsgType {
@@ -65,6 +79,14 @@ impl MessageType for MsgType {
             Self::ConfigRx => CONFIG_SIZE_RECEIVER,
             Self::SaveConfigGnss => CONFIG_SIZE_GNSS,
             Self::SaveConfigRx => CONFIG_SIZE_RECEIVER,
+            Self::ControlsRaw => CONTROLS_SIZE_RAW,
+            Self::ReqControlsRaw => 0,
+            Self::LinkStats => LINK_STATS_SIZE,
+            Self::ReqLinkStats => 0,
+            Self::CalibrateAccel => 0,
+            Self::ReqSystemStatus => 0,
+            Self::SystemStatusGnss => SYSTEM_STATUS_GNSS_SIZE,
+            Self::Ack => 0,
         }
     }
 }
