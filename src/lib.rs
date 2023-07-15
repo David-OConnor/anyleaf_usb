@@ -64,7 +64,8 @@ pub enum MsgType {
     CalibrateAccel = 9,
     ReqSystemStatus = 10,
     SystemStatusGnss = 11,
-    Ack = 12,
+    Success = 12,
+    Error = 13,
 }
 
 impl MessageType for MsgType {
@@ -86,7 +87,8 @@ impl MessageType for MsgType {
             Self::CalibrateAccel => 0,
             Self::ReqSystemStatus => 0,
             Self::SystemStatusGnss => SYSTEM_STATUS_GNSS_SIZE,
-            Self::Ack => 0,
+            Self::Success => 0,
+            Self::Error => 0,
         }
     }
 }
