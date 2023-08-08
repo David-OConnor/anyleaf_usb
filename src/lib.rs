@@ -32,7 +32,7 @@ pub const CONFIG_SIZE_COMMON: usize = 4;
 
 // Only includes things relevant to the UI.
 pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 8;
-pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 2;
+pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 4;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
