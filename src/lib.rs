@@ -7,6 +7,8 @@
 
 use num_enum::TryFromPrimitive; // Enum from integer
 
+const F32_SIZE: usize = 4;
+
 pub const MSG_START: u8 = 69;
 
 // Includes start byte, message type, and device-specific code.
@@ -18,7 +20,7 @@ pub const CRC_POLY: u8 = 0xab;
 pub const CRC_LUT: [u8; 256] = crc_init(CRC_POLY);
 
 // todo: No.
-pub const SENSOR_IFACE_READINGS_SIZE: usize = 4 * 4 + 1;
+pub const SENSOR_IFACE_READINGS_SIZE: usize = 4 * F32_SIZE + 1;
 
 // todo: enum etc for these?
 
@@ -44,6 +46,9 @@ pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
 
+// Attitude quaternion, lat, lon, alt (msl gnss), baro pressure
+pub const AHRS_PARAMS_SIZE: usize = F32_SIZE * 4 + F32_SIZE * 2 * 2 + F32_SIZE + F32_SIZE;
+
 pub trait MessageType {
     fn val(&self) -> u8;
     fn payload_size(&self) -> usize;
@@ -66,6 +71,9 @@ pub enum MsgType {
     SystemStatusGnss = 11,
     Success = 12,
     Error = 13,
+    // todo: Use this AHRS params in corvus?
+    RequestAhrsParams = 14,
+    AhrsParams = 15,
 }
 
 impl MessageType for MsgType {
@@ -89,6 +97,8 @@ impl MessageType for MsgType {
             Self::SystemStatusGnss => SYSTEM_STATUS_GNSS_SIZE,
             Self::Success => 0,
             Self::Error => 0,
+            Self::RequestAhrsParams => 0,
+            Self::AhrsParams => AHRS_PARAMS_SIZE,
         }
     }
 }
