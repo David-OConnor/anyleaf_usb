@@ -5,7 +5,7 @@ use core::sync::atomic::{AtomicU8, Ordering};
 const MAVLINK_MSG_START: u8 = 0xfd;
 
 pub const MAVLINK_SIZE: usize = 12;
-pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 32;
+pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 48;
 pub const TELEM_GC_TO_VEHICLE_SIZE: usize = 29;
 pub const SYSTEM_STATUS_SIZE: usize = 5;
 
@@ -158,4 +158,34 @@ impl MavlinkPacket {
 //         system_status: mavlink::common::MavState::MAV_STATE_STANDBY,
 //         mavlink_version: 0x3,
 //     })
+// }
+
+
+/// todo: Can't find data types for this type.
+/// Mavlink message.
+pub struct NavWaypoint {
+    pub hold_time: f32,
+    pub accept_radius: f32,
+    pub pass_radius: f32,
+    pub yaw: f32,
+    pub latitude: i32,
+    pub longitude: i32,
+    pub altitude: f32,
+}
+
+/// Mavlink message
+pub struct Attitude {
+    pub q1: f32,         // w,
+    pub q2: f32,         // x,
+    pub q3: f32,         // y,
+    pub q4: f32,         // z,
+    pub roll_speed: f32, //rad/s
+    pub pitch_speed: f32,
+    pub yaw_speed: f32,
+    /// Likely N/A
+    pub repr_offset: [f32; 4],
+}
+
+// pub struct LinkNodeStatus {
+//
 // }
