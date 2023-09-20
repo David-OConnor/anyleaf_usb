@@ -10,7 +10,7 @@ pub const TELEM_GC_TO_VEHICLE_SIZE: usize = 29;
 pub const SYSTEM_STATUS_SIZE: usize = 5;
 
 const X25_INIT_CRC: u16 = 0xffff;
-const X25_VALIDATE_CRC: u16 = 0xf0b8;
+const _X25_VALIDATE_CRC: u16 = 0xf0b8;
 
 const SYSTEM_ID: u8 = 110;
 const COMPONENT_ID: u8 = 110;
@@ -45,9 +45,7 @@ impl MavLinkMessage {
 /// https://github.com/mavlink/c_library_v2/blob/master/checksum.h
 fn crc_accumulate(data: u8, crc_accum: &mut u16) {
     // Accumulate one byte of data into the CRC
-    let mut tmp = 0;
-
-    tmp = data as u16 ^ *crc_accum;
+    let mut tmp = data as u16 ^ *crc_accum;
     tmp ^= tmp << 4;
     *crc_accum = (*crc_accum >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ (tmp >> 4);
 }
@@ -159,7 +157,6 @@ impl MavlinkPacket {
 //         mavlink_version: 0x3,
 //     })
 // }
-
 
 /// todo: Can't find data types for this type.
 /// Mavlink message.
