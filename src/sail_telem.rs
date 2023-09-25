@@ -2,7 +2,7 @@
 
 use core::sync::atomic::{AtomicU8, Ordering};
 
-const MAVLINK_MSG_START: u8 = 0xfd;
+pub const MAVLINK_MSG_START: u8 = 0xfd;
 
 pub const MAVLINK_SIZE: usize = 12;
 pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 48;
