@@ -31,6 +31,7 @@ pub const DEVICE_CODE_SENSOR_INTERFACE: u8 = 1;
 pub const DEVICE_CODE_GNSS: u8 = 2;
 pub const DEVICE_CODE_RECEIVER: u8 = 3;
 pub const DEVICE_CODE_CORVUS: u8 = 4;
+pub const DEVICE_CODE_POWER: u8 = 5;
 
 pub const CONFIG_SIZE_COMMON: usize = 4;
 
