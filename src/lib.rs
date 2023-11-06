@@ -37,6 +37,7 @@ pub const CONFIG_SIZE_COMMON: usize = 4;
 // Only includes things relevant to the UI.
 pub const CONFIG_SIZE_GNSS: usize = CONFIG_SIZE_COMMON + 8;
 pub const CONFIG_SIZE_RECEIVER: usize = CONFIG_SIZE_COMMON + 5;
+pub const CONFIG_SIZE_POWER: usize = CONFIG_SIZE_COMMON + 0;
 
 pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
@@ -76,6 +77,8 @@ pub enum MsgType {
     // todo: Use this AHRS params in corvus?
     RequestAhrsParams = 14,
     AhrsParams = 15,
+    ConfigPower = 16,
+    SaveConfigPower = 17,
 }
 
 impl MessageType for MsgType {
@@ -101,21 +104,11 @@ impl MessageType for MsgType {
             Self::Error => 0,
             Self::RequestAhrsParams => 0,
             Self::AhrsParams => AHRS_PARAMS_SIZE,
+            Self::ConfigPower => CONFIG_SIZE_POWER,
+            Self::SaveConfigPower => CONFIG_SIZE_POWER,
         }
     }
 }
-
-// impl MsgType {
-//     pub fn payload_size(&self) -> usize {
-//         match self {
-//             Self::ReqConfig => 0,
-//             Self::ConfigGnss => CONFIG_SIZE_GNSS,
-//             Self::ConfigRx => CONFIG_SIZE_RECEIVER,
-//             Self::SaveConfigGnss => CONFIG_SIZE_GNSS,
-//             Self::SaveConfigRx => CONFIG_SIZE_RECEIVER,
-//         }
-//     }
-// }
 
 /// https://github.com/chris1seto/OzarkRiver/blob/4channel/FlightComputerFirmware/Src/Crsf.c
 const fn crc_init(poly: u8) -> [u8; 256] {
