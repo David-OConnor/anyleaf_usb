@@ -183,6 +183,18 @@ pub struct Attitude {
     pub repr_offset: [f32; 4],
 }
 
+// /// Decoupled from, but similar to that returned by Semtech radios.
+// /// Raw format for ease of transmission.
+// pub struct LinkStats {
+//     /// Divide this by 2 and negate.
+//     /// todo: Which of the 2 returned by the radio should we use here?
+//     pub rssi: u8,
+//     /// Divide this by 4.
+//     pub snr: u8,
+//     /// Portion of receive transmitted packets received, out of 255.
+//     pub link_quality: u8,
+// }
+
 // pub struct LinkNodeStatus {
 //
 // }
