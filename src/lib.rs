@@ -84,9 +84,9 @@ pub enum MsgType {
     SaveConfigPower = 17,
     PowerStats = 18,
     ReqPowerStats = 19,
-    TelemVehicleToGcSail = 1_000,
-    TelemGcToVehicleSail = 1_001,
-    SystemStatusSail = 1_002,
+    TelemVehicleToGcSail = 30,
+    TelemGcToVehicleSail = 31,
+    SystemStatusSail = 32,
 }
 
 impl MessageType for MsgType {
