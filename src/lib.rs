@@ -116,9 +116,9 @@ impl MessageType for MsgType {
             Self::SaveConfigPower => CONFIG_SIZE_POWER,
             Self::PowerStats => POWER_STATS_SIZE,
             Self::ReqPowerStats => 0,
-            TelemVehicleToGcSail => sail_telem::TELEM_VEHICLE_TO_GC_SIZE,
-            TelemGcToVehicleSail => sail_telem::TELEM_GC_TO_VEHICLE_SIZE,
-            SystemStatusSail => sail_telem::SYSTEM_STATUS_SIZE,
+            Self::TelemVehicleToGcSail => sail_telem::TELEM_VEHICLE_TO_GC_SIZE,
+            Self::TelemGcToVehicleSail => sail_telem::TELEM_GC_TO_VEHICLE_SIZE,
+            Self::SystemStatusSail => sail_telem::SYSTEM_STATUS_SIZE,
         }
     }
 }
