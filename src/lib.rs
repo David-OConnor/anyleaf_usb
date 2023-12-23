@@ -50,6 +50,7 @@ pub const PAYLOAD_SIZE_CONFIG_POWER: usize = CONFIG_SIZE_POWER + PAYLOAD_START_I
 
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
+pub const POWER_STATS_SIZE: usize = 36;
 
 // Attitude quaternion, lat, lon, alt (msl gnss), baro pressure
 pub const AHRS_PARAMS_SIZE: usize = F32_SIZE * 4 + F32_SIZE * 2 * 2 + F32_SIZE + F32_SIZE;
@@ -81,6 +82,11 @@ pub enum MsgType {
     AhrsParams = 15,
     ConfigPower = 16,
     SaveConfigPower = 17,
+    PowerStats = 18,
+    ReqPowerStats = 19,
+    TelemVehicleToGcSail = 1_000,
+    TelemGcToVehicleSail = 1_001,
+    SystemStatusSail = 1_002,
 }
 
 impl MessageType for MsgType {
@@ -108,6 +114,11 @@ impl MessageType for MsgType {
             Self::AhrsParams => AHRS_PARAMS_SIZE,
             Self::ConfigPower => CONFIG_SIZE_POWER,
             Self::SaveConfigPower => CONFIG_SIZE_POWER,
+            Self::PowerStats => POWER_STATS_SIZE,
+            Self::ReqPowerStats => 0,
+            TelemVehicleToGcSail => sail_telem::TELEM_VEHICLE_TO_GC_SIZE,
+            TelemGcToVehicleSail => sail_telem::TELEM_GC_TO_VEHICLE_SIZE,
+            SystemStatusSail => sail_telem::SYSTEM_STATUS_SIZE,
         }
     }
 }
