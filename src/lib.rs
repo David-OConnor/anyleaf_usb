@@ -48,6 +48,8 @@ pub const PAYLOAD_SIZE_CONFIG_GNSS: usize = CONFIG_SIZE_GNSS + PAYLOAD_START_I +
 pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I + CRC_LEN;
 pub const PAYLOAD_SIZE_CONFIG_POWER: usize = CONFIG_SIZE_POWER + PAYLOAD_START_I + CRC_LEN;
 
+pub const PAYLOAD_SIZE_SAIL_GC_TO_VEHICLE: usize = sail_telem::TELEM_GC_TO_VEHICLE_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
 pub const POWER_STATS_SIZE: usize = 36;
