@@ -3,8 +3,6 @@
 
 #![no_std]
 
-// use serialport::{self, SerialPort, SerialPortType};
-
 pub mod sail_telem;
 
 use num_enum::TryFromPrimitive; // Enum from integer
@@ -32,6 +30,7 @@ pub const DEVICE_CODE_GNSS: u8 = 2;
 pub const DEVICE_CODE_RECEIVER: u8 = 3;
 pub const DEVICE_CODE_CORVUS: u8 = 4;
 pub const DEVICE_CODE_POWER: u8 = 5;
+pub const DEVICE_CODE_RADIO: u8 = 6;
 
 pub const CONFIG_SIZE_COMMON: usize = 4;
 
@@ -44,11 +43,15 @@ pub const SENSOR_INTERFACE_READINGS_SIZE: usize = 4 * 4 + 1;
 
 pub const SYSTEM_STATUS_GNSS_SIZE: usize = 4;
 
+// todo: Rename these `USB_MSG_SIZE_...` as below for explicitness.
 pub const PAYLOAD_SIZE_CONFIG_GNSS: usize = CONFIG_SIZE_GNSS + PAYLOAD_START_I + CRC_LEN;
 pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I + CRC_LEN;
 pub const PAYLOAD_SIZE_CONFIG_POWER: usize = CONFIG_SIZE_POWER + PAYLOAD_START_I + CRC_LEN;
 
-pub const PAYLOAD_SIZE_SAIL_GC_TO_VEHICLE: usize = sail_telem::TELEM_GC_TO_VEHICLE_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+pub const USB_MSG_SIZE_SAIL_GC_TO_VEHICLE: usize =
+    sail_telem::TELEM_GC_TO_VEHICLE_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+pub const USB_MSG_SIZE_SAIL_VEHICLE_TO_GC: usize =
+    sail_telem::TELEM_VEHICLE_TO_GC_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
 
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
@@ -86,9 +89,8 @@ pub enum MsgType {
     SaveConfigPower = 17,
     PowerStats = 18,
     ReqPowerStats = 19,
-    TelemVehicleToGcSail = 30,
-    TelemGcToVehicleSail = 31,
-    SystemStatusSail = 32,
+    /// eg Mavlink for Sail, but can be arbitrary.
+    Telemetry = 30,
 }
 
 impl MessageType for MsgType {
@@ -118,9 +120,9 @@ impl MessageType for MsgType {
             Self::SaveConfigPower => CONFIG_SIZE_POWER,
             Self::PowerStats => POWER_STATS_SIZE,
             Self::ReqPowerStats => 0,
-            Self::TelemVehicleToGcSail => sail_telem::TELEM_VEHICLE_TO_GC_SIZE,
-            Self::TelemGcToVehicleSail => sail_telem::TELEM_GC_TO_VEHICLE_SIZE,
-            Self::SystemStatusSail => sail_telem::SYSTEM_STATUS_SIZE,
+            // We currently delegate to the mavlink payload size byte, making
+            // this insuitable for arbitrary payloads.
+            Self::Telemetry => 0,
         }
     }
 }

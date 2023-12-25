@@ -16,29 +16,30 @@ const SYSTEM_ID: u8 = 110;
 const COMPONENT_ID: u8 = 110;
 
 // todo: Enum for these A/R
-pub const TELEM_VEHICLE_TO_GC_ID: u32 = 1_000;
-pub const TELEM_GC_TO_VEHICLE_ID: u32 = 1_001;
-pub const SYSTEM_STATUS_ID: u32 = 1_002;
+pub const MAV_ID_VEHICLE_TO_GC: u32 = 1_000;
+pub const MAV_ID_GC_TO_VEHICLE: u32 = 1_001;
+pub const MAV_ID_SYSTEM_STATUS: u32 = 1_002;
+// pub const MAVLINK_ID: u32 = 1_000; // todo: Rename `TELEM_ID`?
 
 static SEQUENCE_NUMBER: AtomicU8 = AtomicU8::new(0);
 
 // 9600 is recommended for 2.4Ghz. by ELRS Airport. 4800 is recommended for 900Mhz
-pub const TELEMETRY_BAUD: u32 = 9_600;
+// pub const TELEMETRY_BAUD: u32 = 9_600;
 
-#[repr(u32)]
-/// Only the ones we use. u32 repr is the message id.
-pub enum MavLinkMessage {
-    NavWaypoint = 16,
-}
-
-impl MavLinkMessage {
-    /// https://github.com/mavlink/c_library_v2/blob/master/all/all.h#L26
-    pub fn base_crc(&self) -> u8 {
-        match self {
-            Self::NavWaypoint => 0,
-        }
-    }
-}
+// #[repr(u32)]
+// /// Only the ones we use. u32 repr is the message id.
+// pub enum MavLinkMessage {
+//     NavWaypoint = 16,
+// }
+//
+// impl MavLinkMessage {
+//     /// https://github.com/mavlink/c_library_v2/blob/master/all/all.h#L26
+//     pub fn base_crc(&self) -> u8 {
+//         match self {
+//             Self::NavWaypoint => 0,
+//         }
+//     }
+// }
 
 // todo: Security, later.
 
