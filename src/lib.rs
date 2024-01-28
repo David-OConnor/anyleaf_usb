@@ -5,7 +5,14 @@
 
 pub mod sail_telem;
 
-use num_enum::TryFromPrimitive; // Enum from integer
+use defmt::println;
+#[cfg(feature = "hal")]
+use hal::usb::UsbBusType;
+use num_enum::TryFromPrimitive;
+#[cfg(feature = "hal")]
+use usbd_serial::{self, SerialPort};
+
+use crate::sail_telem::MAVLINK_SIZE; // Enum from integer
 
 const F32_SIZE: usize = 4;
 
@@ -178,4 +185,41 @@ pub fn check_crc(buf: &[u8], payload_size: usize) -> bool {
     let expected_crc_rx = calc_crc(&CRC_LUT, &buf[..crc_i], crc_i as u8);
 
     crc_received == expected_crc_rx
+}
+
+#[cfg(feature = "hal")]
+/// For use on no_std targets, using HAL.
+pub fn send_payload<const N: usize>(
+    msg_type: MsgType,
+    payload: &[u8],
+    usb_serial: &mut SerialPort<'static, UsbBusType>,
+) {
+    // N is the buffer size (maximum payload size)
+    let mut payload_size = msg_type.payload_size();
+
+    if msg_type == MsgType::Telemetry {
+        payload_size = payload[1] as usize + MAVLINK_SIZE;
+    }
+
+    let mut tx_buf = [0; N];
+
+    tx_buf[0] = MSG_START;
+    tx_buf[1] = DEVICE_CODE_RECEIVER;
+    tx_buf[2] = msg_type as u8;
+
+    if payload_size + PAYLOAD_START_I > payload.len() - 1 {
+        println!("Payload size too long for buffer; not sending over USB");
+        return;
+    }
+
+    tx_buf[PAYLOAD_START_I..(payload_size + PAYLOAD_START_I)]
+        .copy_from_slice(&payload[..payload_size]);
+
+    tx_buf[payload_size + PAYLOAD_START_I] = calc_crc(
+        &CRC_LUT,
+        &tx_buf[..payload_size + PAYLOAD_START_I],
+        (payload_size + PAYLOAD_START_I) as u8,
+    );
+
+    usb_serial.write(&tx_buf).ok();
 }
