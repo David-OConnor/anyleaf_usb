@@ -192,6 +192,7 @@ pub fn check_crc(buf: &[u8], payload_size: usize) -> bool {
 pub fn send_payload<const N: usize>(
     msg_type: MsgType,
     payload: &[u8],
+    device_code: u8,
     usb_serial: &mut SerialPort<'static, UsbBusType>,
 ) {
     // N is the buffer size (maximum payload size)
@@ -204,10 +205,12 @@ pub fn send_payload<const N: usize>(
     let mut tx_buf = [0; N];
 
     tx_buf[0] = MSG_START;
-    tx_buf[1] = DEVICE_CODE_RECEIVER;
+    tx_buf[1] = device_code;
     tx_buf[2] = msg_type as u8;
 
-    if payload_size + PAYLOAD_START_I > payload.len() - 1 {
+    println!("payload len: {:?}, USB payload size: {:?}", payload.len(), payload_size + PAYLOAD_START_I);
+
+    if payload_size + PAYLOAD_START_I > N {
         println!("Payload size too long for buffer; not sending over USB");
         return;
     }
