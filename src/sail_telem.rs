@@ -9,7 +9,7 @@ pub const MAVLINK_PAYLOAD_START_I: usize = 10;
 
 pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 48;
 pub const TELEM_GC_TO_VEHICLE_SIZE: usize = 29;
-pub const SYSTEM_STATUS_SIZE: usize = 5;
+pub const SYSTEM_STATUS_SIZE: usize = 2;
 
 const X25_INIT_CRC: u16 = 0xffff;
 const _X25_VALIDATE_CRC: u16 = 0xf0b8;
@@ -24,9 +24,6 @@ pub const MAV_ID_SYSTEM_STATUS: u32 = 1_002;
 // pub const MAVLINK_ID: u32 = 1_000; // todo: Rename `TELEM_ID`?
 
 static SEQUENCE_NUMBER: AtomicU8 = AtomicU8::new(0);
-
-// 9600 is recommended for 2.4Ghz. by ELRS Airport. 4800 is recommended for 900Mhz
-// pub const TELEMETRY_BAUD: u32 = 9_600;
 
 // #[repr(u32)]
 // /// Only the ones we use. u32 repr is the message id.
