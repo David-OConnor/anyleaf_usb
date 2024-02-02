@@ -4,7 +4,9 @@ use core::sync::atomic::{AtomicU8, Ordering};
 
 pub const MAVLINK_MSG_START: u8 = 0xfd;
 
-pub const MAVLINK_SIZE: usize = 12;
+pub const MAVLINK_SIZE: usize = 12; // includes trailing CRC
+pub const MAVLINK_PAYLOAD_START_I: usize = 10;
+
 pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 48;
 pub const TELEM_GC_TO_VEHICLE_SIZE: usize = 29;
 pub const SYSTEM_STATUS_SIZE: usize = 5;

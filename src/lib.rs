@@ -208,8 +208,6 @@ pub fn send_payload<const N: usize>(
     tx_buf[1] = device_code;
     tx_buf[2] = msg_type as u8;
 
-    println!("payload len: {:?}, USB payload size: {:?}", payload.len(), payload_size + PAYLOAD_START_I);
-
     if payload_size + PAYLOAD_START_I + CRC_LEN > N {
         println!("Payload size too long for buffer; not sending over USB");
         return;
