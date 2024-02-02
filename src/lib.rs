@@ -5,6 +5,7 @@
 
 pub mod sail_telem;
 
+#[cfg(feature = "hal")]
 use defmt::println;
 #[cfg(feature = "hal")]
 use hal::usb::UsbBusType;
