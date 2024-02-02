@@ -1,4 +1,6 @@
 //! Common types used by both the Sail firmware, and its ground control station.
+//! todo: Consider moving this to a separate lib or A/R, either for Sail common,
+//! or Mavlink.
 
 use core::sync::atomic::{AtomicU8, Ordering};
 
@@ -7,21 +9,42 @@ pub const MAVLINK_MSG_START: u8 = 0xfd;
 pub const MAVLINK_SIZE: usize = 12; // includes trailing CRC
 pub const MAVLINK_PAYLOAD_START_I: usize = 10;
 
-pub const TELEM_VEHICLE_TO_GC_SIZE: usize = 48;
-pub const TELEM_GC_TO_VEHICLE_SIZE: usize = 29;
-pub const SYSTEM_STATUS_SIZE: usize = 2;
-
 const X25_INIT_CRC: u16 = 0xffff;
 const _X25_VALIDATE_CRC: u16 = 0xf0b8;
 
 const SYSTEM_ID: u8 = 110;
 const COMPONENT_ID: u8 = 110;
 
-// todo: Enum for these A/R
-pub const MAV_ID_VEHICLE_TO_GC: u32 = 1_000;
-pub const MAV_ID_GC_TO_VEHICLE: u32 = 1_001;
-pub const MAV_ID_SYSTEM_STATUS: u32 = 1_002;
-// pub const MAVLINK_ID: u32 = 1_000; // todo: Rename `TELEM_ID`?
+pub struct ParseError {}
+
+#[repr(u32)]
+#[derive(Clone, Copy)]
+pub enum MavId {
+    VehicleToGc = 1_000,
+    GcToVehicle = 1_001,
+    SystemStatus = 1_002,
+}
+
+impl MavId {
+    pub const fn payload_size(&self) -> usize {
+        match self {
+            Self::VehicleToGc => 48,
+            Self::GcToVehicle => 29,
+            Self::SystemStatus => 2,
+        }
+    }
+
+    /// Assists in patern-matching IDs received in serial communications.
+    pub fn from_id(id: u32) -> Result<Self, ParseError> {
+        Ok(match id {
+            1_000 => Self::VehicleToGc,
+            1_001 => Self::GcToVehicle,
+            1_002 => Self::SystemStatus,
+
+            _ => return Err(ParseError {}),
+        })
+    }
+}
 
 static SEQUENCE_NUMBER: AtomicU8 = AtomicU8::new(0);
 

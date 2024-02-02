@@ -13,7 +13,7 @@ use num_enum::TryFromPrimitive;
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
 
-use crate::sail_telem::MAVLINK_SIZE; // Enum from integer
+use crate::sail_telem::{MavId, MAVLINK_SIZE}; // Enum from integer
 
 const F32_SIZE: usize = 4;
 
@@ -57,9 +57,9 @@ pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I
 pub const PAYLOAD_SIZE_CONFIG_POWER: usize = CONFIG_SIZE_POWER + PAYLOAD_START_I + CRC_LEN;
 
 pub const USB_MSG_SIZE_SAIL_GC_TO_VEHICLE: usize =
-    sail_telem::TELEM_GC_TO_VEHICLE_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+    MavId::GcToVehicle.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
 pub const USB_MSG_SIZE_SAIL_VEHICLE_TO_GC: usize =
-    sail_telem::TELEM_VEHICLE_TO_GC_SIZE + sail_telem::MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+    MavId::VehicleToGc.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
 
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
