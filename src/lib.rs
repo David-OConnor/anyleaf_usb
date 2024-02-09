@@ -3,9 +3,6 @@
 
 #![no_std]
 
-pub mod sail_telem;
-
-#[cfg(feature = "hal")]
 use defmt::println;
 #[cfg(feature = "hal")]
 use hal::usb::UsbBusType;
@@ -13,7 +10,7 @@ use num_enum::TryFromPrimitive;
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
 
-use crate::sail_telem::{MavId, MAVLINK_SIZE}; // Enum from integer
+const MAVLINK_SIZE: usize = 12;
 
 const F32_SIZE: usize = 4;
 
@@ -56,10 +53,11 @@ pub const PAYLOAD_SIZE_CONFIG_GNSS: usize = CONFIG_SIZE_GNSS + PAYLOAD_START_I +
 pub const PAYLOAD_SIZE_CONFIG_RX: usize = CONFIG_SIZE_RECEIVER + PAYLOAD_START_I + CRC_LEN;
 pub const PAYLOAD_SIZE_CONFIG_POWER: usize = CONFIG_SIZE_POWER + PAYLOAD_START_I + CRC_LEN;
 
-pub const USB_MSG_SIZE_SAIL_GC_TO_VEHICLE: usize =
-    MavId::GcToVehicle.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
-pub const USB_MSG_SIZE_SAIL_VEHICLE_TO_GC: usize =
-    MavId::VehicleToGc.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+// todo: C+P this where required in firmware.
+// pub const USB_MSG_SIZE_SAIL_GC_TO_VEHICLE: usize =
+//     MavId::GcToVehicle.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
+// pub const USB_MSG_SIZE_SAIL_VEHICLE_TO_GC: usize =
+//     MavId::VehicleToGc.payload_size() + MAVLINK_SIZE + PAYLOAD_START_I + CRC_LEN;
 
 pub const CONTROLS_SIZE_RAW: usize = 25;
 pub const LINK_STATS_SIZE: usize = 5; // Only the first 4 fields.
