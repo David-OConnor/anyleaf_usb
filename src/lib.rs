@@ -10,7 +10,7 @@ use num_enum::TryFromPrimitive;
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
 
-const MAVLINK_SIZE: usize = 12;
+pub const MAVLINK_SIZE: usize = 12;
 
 const F32_SIZE: usize = 4;
 
