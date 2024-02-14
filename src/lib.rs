@@ -3,7 +3,6 @@
 
 #![no_std]
 
-use defmt::println;
 #[cfg(feature = "hal")]
 use hal::usb::UsbBusType;
 use num_enum::TryFromPrimitive;
