@@ -8,6 +8,8 @@ use hal::usb::UsbBusType;
 use num_enum::TryFromPrimitive;
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
+#[cfg(feature = "hal")]
+use defmt::println;
 
 pub const MAVLINK_SIZE: usize = 12;
 
