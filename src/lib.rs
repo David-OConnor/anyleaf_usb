@@ -4,12 +4,12 @@
 #![no_std]
 
 #[cfg(feature = "hal")]
+use defmt::println;
+#[cfg(feature = "hal")]
 use hal::usb::UsbBusType;
 use num_enum::TryFromPrimitive;
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
-#[cfg(feature = "hal")]
-use defmt::println;
 
 pub const MAVLINK_SIZE: usize = 12;
 
@@ -19,8 +19,8 @@ pub const MSG_START: u8 = 69;
 
 // Includes start byte, message type, and device-specific code.
 pub const PAYLOAD_START_I: usize = 3;
-
 pub const CRC_LEN: usize = 1;
+pub const USB_SIZE: usize = PAYLOAD_START_I + CRC_LEN;
 
 pub const CRC_POLY: u8 = 0xab;
 pub const CRC_LUT: [u8; 256] = crc_init(CRC_POLY);
@@ -196,10 +196,11 @@ pub fn send_payload<const N: usize>(
     usb_serial: &mut SerialPort<'static, UsbBusType>,
 ) {
     // N is the buffer size (maximum payload size)
-    let mut payload_size = msg_type.payload_size();
+    // todo: If you apply this more generally, use this: let pl_len = payload.len();
+    let mut pl_len = msg_type.payload_size();
 
     if msg_type == MsgType::Telemetry {
-        payload_size = payload[1] as usize + MAVLINK_SIZE;
+        pl_len = payload[1] as usize + MAVLINK_SIZE;
     }
 
     let mut tx_buf = [0; N];
@@ -208,19 +209,21 @@ pub fn send_payload<const N: usize>(
     tx_buf[1] = device_code;
     tx_buf[2] = msg_type as u8;
 
-    if payload_size + PAYLOAD_START_I + CRC_LEN > N {
+    if pl_len + PAYLOAD_START_I + CRC_LEN > N {
         println!("Payload size too long for buffer; not sending over USB");
         return;
     }
 
-    tx_buf[PAYLOAD_START_I..(payload_size + PAYLOAD_START_I)]
-        .copy_from_slice(&payload[..payload_size]);
+    tx_buf[PAYLOAD_START_I..(pl_len + PAYLOAD_START_I)]
+        .copy_from_slice(&payload[..pl_len]);
 
-    tx_buf[payload_size + PAYLOAD_START_I] = calc_crc(
+    tx_buf[pl_len + PAYLOAD_START_I] = calc_crc(
         &CRC_LUT,
-        &tx_buf[..payload_size + PAYLOAD_START_I],
-        (payload_size + PAYLOAD_START_I) as u8,
+        &tx_buf[..pl_len + PAYLOAD_START_I],
+        (pl_len + PAYLOAD_START_I) as u8,
     );
 
-    usb_serial.write(&tx_buf).ok();
+    let msg_len = PAYLOAD_START_I + pl_len + CRC_LEN;
+
+    usb_serial.write(&tx_buf[..msg_len]).ok();
 }
