@@ -8,6 +8,7 @@ use defmt::println;
 #[cfg(feature = "hal")]
 use hal::usb::UsbBusType;
 use num_enum::TryFromPrimitive;
+use usb_device::{UsbError, device::UsbDevice};
 #[cfg(feature = "hal")]
 use usbd_serial::{self, SerialPort};
 
@@ -194,6 +195,7 @@ pub fn send_payload<const N: usize>(
     payload: &[u8],
     device_code: u8,
     usb_serial: &mut SerialPort<'static, UsbBusType>,
+    usb_dev: &mut UsbDevice<'static, UsbBusType>,
 ) {
     // N is the buffer size (maximum payload size)
     // todo: If you apply this more generally, use this: let pl_len = payload.len();
@@ -214,8 +216,7 @@ pub fn send_payload<const N: usize>(
         return;
     }
 
-    tx_buf[PAYLOAD_START_I..(pl_len + PAYLOAD_START_I)]
-        .copy_from_slice(&payload[..pl_len]);
+    tx_buf[PAYLOAD_START_I..(pl_len + PAYLOAD_START_I)].copy_from_slice(&payload[..pl_len]);
 
     tx_buf[pl_len + PAYLOAD_START_I] = calc_crc(
         &CRC_LUT,
@@ -225,5 +226,23 @@ pub fn send_payload<const N: usize>(
 
     let msg_len = PAYLOAD_START_I + pl_len + CRC_LEN;
 
-    usb_serial.write(&tx_buf[..msg_len]).ok();
+    // usb_serial.write(&tx_buf[..msg_len]).ok();
+
+    let mut offset = 0;
+    while offset < msg_len {
+        match usb_serial.write(&tx_buf[offset..msg_len]) {
+            Ok(0) | Err(UsbError::WouldBlock) => {
+                usb_dev.poll(&mut [usb_serial]);
+            }
+            Ok(written) => offset += written,
+            Err(e) => {
+                defmt::warn!("USB write error: {:?}", e);
+                break;
+            }
+        }
+    }
+
+    while usb_serial.flush().err() == Some(UsbError::WouldBlock) {
+        usb_dev.poll(&mut [usb_serial]);
+    }
 }
